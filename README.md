@@ -7,5 +7,8 @@ Demonstrates basics principles of  Microservices architecture, its design patter
  		A somple microservice that provides REST endpoints to perfrom CRUD operations.
 2. database - default Django available database (MySQL 8.0)
 3. front end app - REACT
+4. API Gateway - netflix zuul API Gateway is used
+
+
 
 
