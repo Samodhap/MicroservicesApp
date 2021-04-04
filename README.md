@@ -9,6 +9,8 @@ Demonstrates basics principles of  Microservices architecture, its design patter
 3. front end app - REACT
 4. API Gateway - netflix zuul API Gateway is used
 
+All the componants are dockerized and deplyed using docker compose.
+
 
 
 
