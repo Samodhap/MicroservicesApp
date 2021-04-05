@@ -7,7 +7,7 @@ function App() {
 
     const fetchData = async () => {
         const response = await axios.get(
-            'http://localhost:8000/products/'
+            'http://localhost:8080/product-catalog/products/'
         );
 
         setProducts(response.data);

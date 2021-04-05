@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  service-registry:
+    container_name: service-registry
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: service-registry:latest
+    ports:
+      - 8761:8761

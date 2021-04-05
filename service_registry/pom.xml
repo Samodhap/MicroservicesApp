@@ -9,22 +9,18 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>apigw</artifactId>
+	<artifactId>service_registry</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>apigw</name>
-	<description>zuul based api gateway</description>
+	<name>service_registry</name>
+	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>8</java.version>
+		<java.version>1.8</java.version>
 		<spring-cloud.version>Hoxton.SR10</spring-cloud.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
 		</dependency>
 
 		<dependency>

@@ -1,6 +1,15 @@
 version: "3.9"
 
 services:
+  service-registry:
+    container_name: service-registry
+    build:
+      context: service_registry/
+      dockerfile: Dockerfile
+    image: service-registry:latest
+    ports:
+      - 8761:8761
+
   db:
     image: mysql:5.7
     restart: always
@@ -27,6 +36,18 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - service-registry
+
+  sidecar-product-catalog:
+    container_name: sidecar-product-catalog
+    build:
+      context: sidecar/
+      dockerfile: Dockerfile
+    image: sidecar-product-catalog
+    ports:
+      - 5678:5678
+    depends_on:
+      - microservice1
 
   fe:
     container_name: fe
@@ -51,6 +72,8 @@ services:
         - 8080:8080
      networks:
         - spring-cloud-network
+     depends_on:
+        - service-registry
 
 volumes:
   my-db:

@@ -1,0 +1,35 @@
+server:
+  port: 5678
+
+spring:
+  application:
+    name: product-catalog
+# Actuator endpoint path (/admin/info, /admin/health, ...)
+server.servlet-path: /
+management.context-path: /admin
+
+# See
+# https://github.com/xetys/microservices-sidecar-example/blob/master/RailsApplication/Dockerfile
+# https://github.com/xetys/microservices-sidecar-example/blob/master/sidecar/src/main/resources/application.yml
+sidecar:
+  hostname: localhost
+  # port should be passed from command line (eg java -jar ... --sidecar.port=5432 ...)
+  port: 8000
+  health-uri: http://localhost:8000/health.json
+
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    appname: ${spring.application.name}
+    hostname: ${sidecar.hostname}
+    healthCheckUrlPath: ${sidecar.health-uri}
+    preferIpAddress: true
+    metadataMap:
+      instanceId: ${spring.application.name}:${sidecar.port}
+
+
