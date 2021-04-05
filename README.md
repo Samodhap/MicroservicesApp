@@ -7,9 +7,14 @@ Demonstrates basics principles of  Microservices architecture, its design patter
  		A somple microservice that provides REST endpoints to perfrom CRUD operations.
 2. database - default Django available database (MySQL 8.0)
 3. front end app - REACT
-4. API Gateway - netflix zuul API Gateway is used
+4. API Gateway - netflix zuul API Gateway is used (Spring boot based)
+5. Eureka server - to handle service registry (Spring boot based)
+6. Sidecar application - to handle communication among Django microservice and Eureka server (Spring boot based)
 
 All the componants are dockerized and deplyed using docker compose.
+
+![image](https://user-images.githubusercontent.com/47441406/113640137-242fd800-96be-11eb-9f46-79b5174d1e85.png)
+
 
 
 
