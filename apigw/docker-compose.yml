@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  api-gw:
+    container_name: api-gw
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: message-server:latest
+    ports:
+      - 8080:8080

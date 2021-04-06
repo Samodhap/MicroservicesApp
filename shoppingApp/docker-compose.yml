@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'productsdb'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  microservice1:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py createsuperuser && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/ProductCatCode
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  my-db:

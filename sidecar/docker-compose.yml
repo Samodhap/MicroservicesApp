@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  sidecar-product-catalog:
+    container_name: sidecar-product-catalog
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sidecar-product-catalog
+    ports:
+      - 5678:5678
