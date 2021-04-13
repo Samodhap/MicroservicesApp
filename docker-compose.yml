@@ -6,9 +6,17 @@ services:
     build:
       context: service_registry/
       dockerfile: Dockerfile
-    image: service-registry:latest
+    image: service-registry
+    networks:
+        - spring-cloud-network
     ports:
-      - 8761:8761
+      - 8761:8761  
+    healthcheck:
+      test: curl --fail -s http://localhost:8761/ || exit 1 
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
 
   db:
     image: mysql:5.7
@@ -24,6 +32,8 @@ services:
       - '3306'
     volumes:
       - my-db:/var/lib/mysql
+    networks:
+        - spring-cloud-network
 
   microservice1:
     build:
@@ -34,9 +44,10 @@ services:
       - .:/ProductCatCode
     ports:
       - "8000:8000"
+    networks:
+      - spring-cloud-network
     depends_on:
       - db
-      - service-registry
 
   sidecar-product-catalog:
     container_name: sidecar-product-catalog
@@ -44,36 +55,50 @@ services:
       context: sidecar/
       dockerfile: Dockerfile
     image: sidecar-product-catalog
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+      - "SPRING_PROFILES_ACTIVE=eureka"
+      - "SIDECAR_HEALTHURI=http://microservice1:8000/health.json"
+      - "SIDECAR_HOSTNAME=microservice1"
     ports:
       - 5678:5678
+    networks:
+        - spring-cloud-network
     depends_on:
-      - microservice1
-
-  fe:
-    container_name: fe
-    build:
-      context: shopping_app_fe/
-      dockerfile: Dockerfile
-    volumes:
-      - '.:/shopping_app_fe/app'
-      - '/shopping_app_fe/app/node_modules'
-    ports:
-      - 3001:3000
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+      service-registry:
+         condition: service_healthy
 
   api-gw:
      container_name: api-gw
      build:
         context: apigw/
         dockerfile: Dockerfile
-     image: message-server:latest
+     image: api-gw
+     environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+      - "SPRING_PROFILES_ACTIVE=eureka"
      ports:
         - 8080:8080
      networks:
         - spring-cloud-network
      depends_on:
-        - service-registry
+        service-registry:
+          condition: service_healthy
+
+  fe:
+     container_name: fe
+     build:
+        context: shopping_app_fe/
+        dockerfile: Dockerfile
+     volumes:
+        - '.:/shopping_app_fe/app'
+        - '/shopping_app_fe/app/node_modules'
+     ports:
+        - 3001:3000
+     environment:
+        - CHOKIDAR_USEPOLLING=true
+     networks:
+        - spring-cloud-network
 
 volumes:
   my-db:
