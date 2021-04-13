@@ -1,21 +1,23 @@
+# sidecar is designed to be executed in the same host as main microservices ( localhost), but this is different when
+# using docker containers.
+# 1. preferIpAddress should be set to "false" when using separate container for main microservice. SO that the hostname is
+#used instead of the ipaddress
+
+
 server:
   port: 5678
 
 spring:
   application:
     name: product-catalog
-# Actuator endpoint path (/admin/info, /admin/health, ...)
 server.servlet-path: /
 management.context-path: /admin
 
-# See
-# https://github.com/xetys/microservices-sidecar-example/blob/master/RailsApplication/Dockerfile
-# https://github.com/xetys/microservices-sidecar-example/blob/master/sidecar/src/main/resources/application.yml
+#
 sidecar:
-  hostname: localhost
-  # port should be passed from command line (eg java -jar ... --sidecar.port=5432 ...)
-  port: 8000
-  health-uri: http://localhost:8000/health.json
+  hostname: ${SIDECAR_HOSTNAME:localhost}
+  port: ${SIDECAR_PORT:8000}
+  health-uri: ${SIDECAR_HEALTH_URI:http://localhost:8000/health}
 
 
 eureka:
@@ -23,13 +25,11 @@ eureka:
     registerWithEureka: true
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
   instance:
     appname: ${spring.application.name}
     hostname: ${sidecar.hostname}
     healthCheckUrlPath: ${sidecar.health-uri}
-    preferIpAddress: true
+    preferIpAddress: false
     metadataMap:
       instanceId: ${spring.application.name}:${sidecar.port}
-
-
