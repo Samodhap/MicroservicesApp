@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  load-balancer:
+    container_name: load-balancer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: load-balancer:latest
+    ports:
+      - 8888:8888

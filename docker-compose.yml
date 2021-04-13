@@ -18,6 +18,23 @@ services:
       retries: 10
       start_period: 10s
 
+  load-balancer:
+    container_name: load-balancer
+    build:
+      context: load-balancer/
+      dockerfile: Dockerfile
+    image: load-balancer:latest
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+      - "SPRING_PROFILES_ACTIVE=eureka"
+    ports:
+      - 8888:8888
+    networks:
+      - spring-cloud-network
+    depends_on:
+      service-registry:
+         condition: service_healthy
+
   db:
     image: mysql:5.7
     restart: always
@@ -62,6 +79,39 @@ services:
       - "SIDECAR_HOSTNAME=microservice1"
     ports:
       - 5678:5678
+    networks:
+        - spring-cloud-network
+    depends_on:
+      service-registry:
+         condition: service_healthy
+
+  microservice2:
+    build:
+      context: shoppingApp/
+      dockerfile: Dockerfile
+    command: bash -c "python shoppingApp/manage.py makemigrations && python shoppingApp/manage.py migrate && python shoppingApp/manage.py createsuperuser && python shoppingApp/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/ProductCatCode
+    ports:
+      - "8001:8000"
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - db
+
+  sidecar-product-catalog2:
+    container_name: sidecar-product-catalog2
+    build:
+      context: sidecar/
+      dockerfile: Dockerfile
+    image: sidecar-product-catalog
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+      - "SPRING_PROFILES_ACTIVE=eureka"
+      - "SIDECAR_HEALTHURI=http://microservice2:8000/health.json"
+      - "SIDECAR_HOSTNAME=microservice2"
+    ports:
+      - 5679:5678
     networks:
         - spring-cloud-network
     depends_on:
